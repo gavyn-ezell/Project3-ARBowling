@@ -1,82 +1,86 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BowlingScript : MonoBehaviour
 {
-
-    public GameObject bowlingSetupPrefab;
-
+    private SetupSpawner spawner;
+    //canvas elements
+    public Slider horizontalSlider;
+    public Slider vertSlider;
+    public Slider powerSlider;
+    public Toggle guardToggle;
+    
+    //bowling lane elements
+    public GameObject currSetup;
+    public GameObject ballAnchor;
+    public GameObject ball;
+    public GameObject launchIndicator;
     private bool isLaunched = false;
-    private bool railsOn = false;
-    private GameObject currSetup;
-    private GameObject ballAnchor;
-    private GameObject ball;
-    private GameObject launchIndicator;
     public float launchPower;
-    private float angleChange = 0.2f;
+    
     
     void Start()
     {
-        currSetup = Instantiate(bowlingSetupPrefab);
+        spawner = GameObject.Find("Spawner").GetComponent<SetupSpawner>();
         currSetup.transform.Find("Rails").gameObject.SetActive(false);
-        ballAnchor = currSetup.transform.Find("BallAnchor").gameObject;
-        ball = ballAnchor.transform.Find("Ball").gameObject;
-        launchIndicator = ballAnchor.transform.Find("Line").gameObject;
+        // ballAnchor = currSetup.transform.Find("BallAnchor").gameObject;
+        // ball = ballAnchor.transform.Find("Ball").gameObject;
+        // launchIndicator = ballAnchor.transform.Find("Line").gameObject;
     }
     // Update is called once per frame
+
     void Update()
     {
-        //already launched, restrict user input to just reset button
+        Debug.Log((float)horizontalSlider.value);
+        // Debug.Log(float(vertSlider.value));
+        if (!isLaunched)
+        {
+            ball.transform.rotation = ballAnchor.transform.rotation * Quaternion.Euler(Vector3.up * horizontalSlider.value) * Quaternion.Euler(Vector3.right * -vertSlider.value);
+        }
+    }
+    // public void horizontalAngleChange()
+    // {
+    //     Debug.Log("HELLO");
+    //     float angleVal = horizontalSlider.value;
+    //     Debug.Log(angleVal);
+    //     Debug.Log(ballAnchor);
+    //     ballAnchor.transform.rotation = ballAnchor.transform.rotation * Quaternion.Euler(Vector3.up * angleVal);
+    // }
+    // public void verticalAngleChange()
+    // {
+    //     float angleVal = vertSlider.value;
+    //     ballAnchor.transform.rotation = ballAnchor.transform.rotation * Quaternion.Euler(Vector3.right * angleVal);
+    // }
+    public void launchBall()
+    {
         if (isLaunched)
         {
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                Destroy(currSetup);
-                currSetup = Instantiate(bowlingSetupPrefab);
-                currSetup.transform.Find("Rails").gameObject.SetActive(false);
-                ballAnchor = currSetup.transform.Find("BallAnchor").gameObject;
-                ball = ballAnchor.transform.Find("Ball").gameObject;
-                launchIndicator = ballAnchor.transform.Find("Line").gameObject;
-                isLaunched = false;
-                railsOn = false;
-            }
             return;
         }
-        
-        //user can setup their launch of the bowling ball
-        if (Input.GetKeyDown("space"))
-        {
-            // Debug.Log("PUSH BALL");
-            // Vector3 launchVector = Quaternion.AngleAxis(launchAngle, Vector3.up) * ballAnchor.forward; 
-            ball.GetComponent<Rigidbody>().AddForce(ballAnchor.transform.forward * launchPower);
-            isLaunched = true;
-            launchIndicator.SetActive(false);
-
-        }
-        else if (Input.GetKeyDown(KeyCode.T))
-        {
-            bool nextState = !railsOn;
-            railsOn = nextState;
-            currSetup.transform.Find("Rails").gameObject.SetActive(nextState);
-        }
-        else if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            ballAnchor.transform.rotation *= Quaternion.Euler(new Vector3(0,-angleChange,0)); 
-        }
-        else if (Input.GetKey(KeyCode.RightArrow))
-        {
-            ballAnchor.transform.rotation *= Quaternion.Euler(new Vector3(0,angleChange,0)); 
-        }
-        else if (Input.GetKey(KeyCode.UpArrow))
-        {
-            ballAnchor.transform.rotation *= Quaternion.Euler(new Vector3(-angleChange,0,0)); 
-        }
-         else if (Input.GetKey(KeyCode.DownArrow))
-        {
-            ballAnchor.transform.rotation *= Quaternion.Euler(new Vector3(angleChange,0,0)); 
-        }
-        
+        ball.GetComponent<Rigidbody>().AddForce(ballAnchor.transform.forward * launchPower);
+        isLaunched = true;
+        launchIndicator.SetActive(false);
     }
+
+    public void manageRails()
+    {
+        if (guardToggle.isOn)
+        {
+            currSetup.transform.Find("Rails").gameObject.SetActive(true);
+        }
+        else
+        {
+            currSetup.transform.Find("Rails").gameObject.SetActive(false);
+        }
+
+    }
+
+    public void resetLane()
+    {
+        spawner.resetLane();
+    }
+
 
 }
