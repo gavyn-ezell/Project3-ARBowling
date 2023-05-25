@@ -33,11 +33,12 @@ public class BowlingScript : MonoBehaviour
 
     void Update()
     {
-        Debug.Log((float)horizontalSlider.value);
-        // Debug.Log(float(vertSlider.value));
+        //Debug.Log((float)horizontalSlider.value);
+        // Debug.Log(spawner);
         if (!isLaunched)
         {
             ball.transform.rotation = ballAnchor.transform.rotation * Quaternion.Euler(Vector3.up * horizontalSlider.value) * Quaternion.Euler(Vector3.right * -vertSlider.value);
+            launchPower = powerSlider.value;
         }
     }
     // public void horizontalAngleChange()
@@ -46,7 +47,7 @@ public class BowlingScript : MonoBehaviour
     //     float angleVal = horizontalSlider.value;
     //     Debug.Log(angleVal);
     //     Debug.Log(ballAnchor);
-    //     ballAnchor.transform.rotation = ballAnchor.transform.rotation * Quaternion.Euler(Vector3.up * angleVal);
+    //     ballr.transform.rotation = ballAnchor.transform.rotation * Quaternion.Euler(Vector3.up * angleVal);
     // }
     // public void verticalAngleChange()
     // {
@@ -59,7 +60,8 @@ public class BowlingScript : MonoBehaviour
         {
             return;
         }
-        ball.GetComponent<Rigidbody>().AddForce(ballAnchor.transform.forward * launchPower);
+        ball.transform.Find("Line").gameObject.SetActive(false);
+        ball.GetComponent<Rigidbody>().AddForce(ball.transform.forward * launchPower);
         isLaunched = true;
         launchIndicator.SetActive(false);
     }
