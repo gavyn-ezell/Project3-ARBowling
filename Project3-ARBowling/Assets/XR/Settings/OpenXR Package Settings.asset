@@ -435,7 +435,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12ea98de581824d928181a8149a1e778, type: 3}
   m_Name: HandTrackingFeature Android
   m_EditorClassIdentifier: 
-  m_enabled: 0
+  m_enabled: 1
   nameUi: Hand Tracking (Deprecated)
   version: 0.13.0
   featureIdInternal: com.qualcomm.snapdragon.spaces.handtracking.deprecated
